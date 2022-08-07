@@ -10,6 +10,13 @@ from bot.helper.ext_utils.fs_utils import get_base_name, check_storage_threshold
 
 
 @new_thread
+def batalin():
+    with download_dict_lock:
+        tasks = len(download_dict)
+        if STATUS_LIMIT > tasks:
+            return False
+        return True
+
 def __onDownloadStarted(api, gid):
     try:
         if any([STOP_DUPLICATE, TORRENT_DIRECT_LIMIT, ZIP_UNZIP_LIMIT, STORAGE_THRESHOLD]):
@@ -46,7 +53,8 @@ def __onDownloadStarted(api, gid):
                 size = download.total_length
                 arch = any([dl.getListener().isZip, dl.getListener().extract])
                 if STORAGE_THRESHOLD is not None:
-                    acpt = check_storage_threshold(size, arch, True)
+                    acpt = batalin()
+                   # acpt = check_storage_threshold(size, arch, True)
                     # True if files allocated, if allocation disabled remove True arg
                     if not acpt:
                         msg = f'You must leave {STORAGE_THRESHOLD}GB free storage.'
