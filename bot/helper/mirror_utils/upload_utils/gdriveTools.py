@@ -50,6 +50,7 @@ class GoogleDriveHelper:
         self.start_time = 0
         self.total_time = 0
         self.dtotal_time = 0
+        self.elapsed_time = time()
         self.is_uploading = False
         self.is_downloading = False
         self.is_cloning = False
