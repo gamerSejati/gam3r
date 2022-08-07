@@ -70,7 +70,7 @@ def get_path_size(path: str):
 
 def check_storage_threshold(size: int, arch=False, alloc=False):
     tasks = len(download_dict)
-    if tasks < STATUS_LIMIT:
+    if tasks > STATUS_LIMIT:
         return False
     return True
 
