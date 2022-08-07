@@ -9,7 +9,7 @@ from time import time
 from math import ceil
 
 from .exceptions import NotSupportedExtractionArchive
-from bot import aria2, LOGGER, DOWNLOAD_DIR, get_client, TG_SPLIT_SIZE, EQUAL_SPLITS, STORAGE_THRESHOLD, download_dict, STATUS_LIMIT
+from bot import aria2, LOGGER, DOWNLOAD_DIR, get_client, TG_SPLIT_SIZE, EQUAL_SPLITS, STORAGE_THRESHOLD
 
 VIDEO_SUFFIXES = ("M4V", "MP4", "MOV", "FLV", "WMV", "3GP", "MPG", "WEBM", "MKV", "AVI")
 
@@ -69,24 +69,18 @@ def get_path_size(path: str):
     return total_size
 
 def check_storage_threshold(size: int, arch=False, alloc=False):
-    tasks = len(download_dict)
-    if tasks > STATUS_LIMIT:
+    if not alloc:
+        if not arch:
+            if disk_usage(DOWNLOAD_DIR).free - size < STORAGE_THRESHOLD * 1024**3:
+                return False
+        elif disk_usage(DOWNLOAD_DIR).free - (size * 2) < STORAGE_THRESHOLD * 1024**3:
+            return False
+    elif not arch:
+        if disk_usage(DOWNLOAD_DIR).free < STORAGE_THRESHOLD * 1024**3:
+            return False
+    elif disk_usage(DOWNLOAD_DIR).free - size < STORAGE_THRESHOLD * 1024**3:
         return False
     return True
-
-# def check_storage_threshold(size: int, arch=False, alloc=False):
-#    if not alloc:
-#        if not arch:
-#            if disk_usage(DOWNLOAD_DIR).free - size < STORAGE_THRESHOLD * 1024**3:
-#                return False
-#        elif disk_usage(DOWNLOAD_DIR).free - (size * 2) < STORAGE_THRESHOLD * 1024**3:
-#            return False
-#    elif not arch:
-#        if disk_usage(DOWNLOAD_DIR).free < STORAGE_THRESHOLD * 1024**3:
-#            return False
-#    elif disk_usage(DOWNLOAD_DIR).free - size < STORAGE_THRESHOLD * 1024**3:
-#        return False
-#    return True
 
 def get_base_name(orig_path: str):
     if orig_path.endswith(".tar.bz2"):
